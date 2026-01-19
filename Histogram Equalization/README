@@ -1,0 +1,110 @@
+# Histogram Equalization in MATLAB (Using Built-in and Manual Method)
+
+## Purpose
+To enhance image contrast using histogram equalization and compare MATLAB’s built-in function with a manually implemented method.
+
+---
+
+## Code Used
+```matlab
+clc;
+clear;
+close all;
+
+% Read Original Image
+rgb_img = imread('Image.jpeg');
+
+% Convert to Grayscale
+gray_img = rgb2gray(rgb_img);
+[M, N] = size(gray_img);
+
+% Histogram Equalization Using histeq
+histeq_img = histeq(gray_img);
+
+% Manual Histogram Equalization
+
+% Histogram Calculation
+hist = zeros(1,256);
+for i = 1:M
+    for j = 1:N
+        intensity = gray_img(i,j);
+        hist(intensity + 1) = hist(intensity + 1) + 1;
+    end
+end
+
+% Probability Density Function
+pdf = hist / (M * N);
+
+% Cumulative Distribution Function
+cdf = zeros(1,256);
+cdf(1) = pdf(1);
+for k = 2:256
+    cdf(k) = cdf(k-1) + pdf(k);
+end
+
+% Transformation Function
+T = round(cdf * 255);
+
+% Pixel Mapping
+manual_eq_img = zeros(M,N);
+for i = 1:M
+    for j = 1:N
+        manual_eq_img(i,j) = T(gray_img(i,j) + 1);
+    end
+end
+manual_eq_img = uint8(manual_eq_img);
+
+% Display Results
+figure('Name','Histogram Equalization Comparison','NumberTitle','off');
+
+subplot(3,3,1); imshow(rgb_img); title('Original RGB');
+subplot(3,3,2); imshow(gray_img); title('Grayscale');
+subplot(3,3,3); imhist(gray_img); title('Grayscale Histogram');
+
+subplot(3,3,4); imshow(histeq_img); title('histeq Image');
+subplot(3,3,5); imhist(histeq_img); title('histeq Histogram');
+
+subplot(3,3,6); imshow(manual_eq_img); title('Manual Equalization');
+subplot(3,3,7); imhist(manual_eq_img); title('Manual Histogram');
+
+subplot(3,3,8); axis off;
+subplot(3,3,9); axis off;
+
+
+Operations Performed 
+
+Reads an RGB image
+
+Converts RGB image to grayscale
+
+Enhances contrast using MATLAB histeq
+
+Computes histogram manually
+
+Calculates PDF and CDF
+
+Generates transformation function
+
+Performs manual pixel mapping
+
+Displays original and equalized images with histograms
+
+
+
+Output
+
+Original RGB image
+
+Grayscale image and histogram
+
+Histogram equalized image using histeq
+
+Histogram equalized image using manual method
+
+Visual comparison of both techniques
+
+
+
+Conclusion
+
+Both built-in and manual histogram equalization improve image contrast. The manual method verifies the working principle behind MATLAB’s histeq function.
